@@ -93,19 +93,15 @@ function computeMonthlySeries(records) {
   });
 
   let total = 0;
-  const labels = [];
-  const values = [];
-
-  monthlyTotals.forEach((delta, index) => {
+  const values = monthlyTotals.map((delta, index) => {
     if (monthlyCounts[index] === 0) {
-      return;
+      return null;
     }
     total += delta;
-    labels.push(MONTH_LABELS[index]);
-    values.push(total);
+    return total;
   });
 
-  return { labels, values };
+  return { labels: MONTH_LABELS, values };
 }
 
 function updateFilterOptions(records) {
@@ -158,6 +154,7 @@ function renderChart(records) {
             tension: 0.25,
             fill: true,
             pointRadius: 4,
+            spanGaps: false,
           },
         ],
       },
@@ -187,6 +184,7 @@ function renderChart(records) {
 
   chart.data.labels = series.labels;
   chart.data.datasets[0].data = series.values;
+  chart.data.datasets[0].spanGaps = false;
   chart.update();
 }
 

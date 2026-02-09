@@ -59,7 +59,7 @@ h1 {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
   gap: 24px;
   align-items: start;
 }
@@ -84,7 +84,8 @@ h1 {
 }
 
 .chart-card {
-  min-height: 520px;
+  min-height: 600px;
+  grid-column: span 2;
 }
 
 .field {
@@ -187,13 +188,7 @@ button.ghost:hover {
 
 .chart-wrap {
   position: relative;
-  min-height: 360px;
-}
-
-@media (min-width: 900px) {
-  .chart-card {
-    grid-column: span 2;
-  }
+  min-height: 420px;
 }
 
 .table-wrap {
@@ -265,5 +260,15 @@ button.ghost:hover {
 
   button {
     width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    grid-column: auto;
   }
 }
