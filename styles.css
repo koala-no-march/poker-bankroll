@@ -84,7 +84,7 @@ h1 {
 }
 
 .chart-card {
-  min-height: 420px;
+  min-height: 520px;
 }
 
 .field {
@@ -187,7 +187,13 @@ button.ghost:hover {
 
 .chart-wrap {
   position: relative;
-  min-height: 280px;
+  min-height: 360px;
+}
+
+@media (min-width: 900px) {
+  .chart-card {
+    grid-column: span 2;
+  }
 }
 
 .table-wrap {

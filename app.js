@@ -82,21 +82,30 @@ function getYearMonth(dateString) {
 
 function computeMonthlySeries(records) {
   const monthlyTotals = Array.from({ length: 12 }, () => 0);
+  const monthlyCounts = Array.from({ length: 12 }, () => 0);
   records.forEach((record) => {
     const parsed = getYearMonth(record.date);
     if (!parsed || parsed.year !== CHART_YEAR) {
       return;
     }
     monthlyTotals[parsed.month - 1] += record.delta;
+    monthlyCounts[parsed.month - 1] += 1;
   });
 
   let total = 0;
-  const values = monthlyTotals.map((delta) => {
+  const labels = [];
+  const values = [];
+
+  monthlyTotals.forEach((delta, index) => {
+    if (monthlyCounts[index] === 0) {
+      return;
+    }
     total += delta;
-    return total;
+    labels.push(MONTH_LABELS[index]);
+    values.push(total);
   });
 
-  return { labels: MONTH_LABELS, values };
+  return { labels, values };
 }
 
 function updateFilterOptions(records) {
@@ -163,7 +172,6 @@ function renderChart(records) {
           },
           x: {
             type: "category",
-            labels: MONTH_LABELS,
             grid: {
               display: false,
             },
@@ -177,7 +185,7 @@ function renderChart(records) {
     return;
   }
 
-  chart.data.labels = MONTH_LABELS;
+  chart.data.labels = series.labels;
   chart.data.datasets[0].data = series.values;
   chart.update();
 }
