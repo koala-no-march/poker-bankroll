@@ -207,6 +207,15 @@ button.ghost:hover {
   border-bottom: 1px solid rgba(29, 27, 22, 0.12);
 }
 
+.records-table .record-row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.records-table .record-row:hover {
+  background: rgba(31, 138, 138, 0.08);
+}
+
 .records-table th {
   color: var(--muted);
   font-weight: 600;

@@ -162,8 +162,13 @@ function renderChart(records) {
             },
           },
           x: {
+            type: "category",
+            labels: MONTH_LABELS,
             grid: {
               display: false,
+            },
+            ticks: {
+              autoSkip: false,
             },
           },
         },
@@ -172,7 +177,7 @@ function renderChart(records) {
     return;
   }
 
-  chart.data.labels = series.labels;
+  chart.data.labels = MONTH_LABELS;
   chart.data.datasets[0].data = series.values;
   chart.update();
 }
@@ -189,6 +194,8 @@ function renderTable(records) {
   tableEmpty.textContent = "";
   sorted.forEach((record) => {
     const row = document.createElement("tr");
+    row.className = "record-row";
+    row.addEventListener("click", () => startEdit(record));
 
     const nameCell = document.createElement("td");
     nameCell.textContent = record.name;
@@ -204,7 +211,10 @@ function renderTable(records) {
     editButton.type = "button";
     editButton.className = "ghost edit-button";
     editButton.textContent = "編集";
-    editButton.addEventListener("click", () => startEdit(record));
+    editButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      startEdit(record);
+    });
     actionCell.appendChild(editButton);
 
     row.appendChild(nameCell);
