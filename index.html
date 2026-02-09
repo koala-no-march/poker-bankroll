@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Poker Bankroll Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Free poker bankroll log</p>
+          <h1>Poker Bankroll Tracker</h1>
+          <p class="subtitle">
+            Track daily chip changes and visualize the cumulative trend.
+          </p>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <h2>Add a session</h2>
+          <form id="entry-form" novalidate>
+            <label class="field">
+              <span>Name</span>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Your name"
+                required
+                maxlength="100"
+              />
+            </label>
+            <label class="field">
+              <span>Date</span>
+              <input type="date" name="date" id="date" required />
+            </label>
+            <label class="field">
+              <span>Chip delta</span>
+              <input
+                type="number"
+                name="delta"
+                id="delta"
+                placeholder="e.g. 1200 or -500"
+                required
+                step="1"
+              />
+            </label>
+            <div class="actions">
+              <button type="submit">Save entry</button>
+              <button type="reset" class="ghost">Reset</button>
+            </div>
+            <p id="status" class="status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="card chart-card">
+          <div class="chart-header">
+            <div>
+              <h2>Bankroll trend</h2>
+              <p class="muted">Cumulative chip changes over time.</p>
+            </div>
+            <label class="field inline">
+              <span>Filter</span>
+              <select id="name-filter">
+                <option value="all">All players</option>
+              </select>
+            </label>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="trend-chart" aria-label="Bankroll trend chart"></canvas>
+          </div>
+          <p class="hint" id="chart-hint"></p>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
