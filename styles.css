@@ -16,7 +16,7 @@
 
 body {
   margin: 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Space Grotesk", "Noto Sans JP", sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at top left, #ffe9d1, transparent 55%),
     radial-gradient(circle at 20% 35%, rgba(31, 138, 138, 0.2), transparent 55%),
@@ -123,6 +123,7 @@ select:focus {
 .actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 button {
@@ -150,6 +151,10 @@ button.ghost {
 
 button.ghost:hover {
   background: rgba(231, 111, 81, 0.08);
+}
+
+.is-hidden {
+  display: none;
 }
 
 .status {
@@ -183,6 +188,37 @@ button.ghost:hover {
 .chart-wrap {
   position: relative;
   min-height: 280px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.records-table th,
+.records-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(29, 27, 22, 0.12);
+}
+
+.records-table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.records-table .edit-button {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 999px;
 }
 
 .hint {

@@ -15,18 +15,36 @@ function doPost(e) {
     return jsonResponse(payload);
   }
 
-  if (payload.action !== "create") {
+  if (payload.action !== "create" && payload.action !== "update") {
     return jsonResponse({ ok: false, error: { code: "BAD_ACTION", message: "Invalid action." } });
   }
 
-  const data = payload.data || {};
-  const validation = validateRecord_(data);
-  if (!validation.ok) {
-    return jsonResponse(validation);
+  if (payload.action === "create") {
+    const data = payload.data || {};
+    const validation = validateRecord_(data);
+    if (!validation.ok) {
+      return jsonResponse(validation);
+    }
+
+    const record = saveRecord_(data);
+    return jsonResponse({ ok: true, data: record });
   }
 
-  const record = saveRecord_(data);
-  return jsonResponse({ ok: true, data: record });
+  const updateData = payload.data || {};
+  const updateValidation = validateRecord_(updateData);
+  if (!updateValidation.ok) {
+    return jsonResponse(updateValidation);
+  }
+
+  if (!payload.id) {
+    return jsonResponse({ ok: false, error: { code: "ID_REQUIRED", message: "ID is required." } });
+  }
+
+  const updated = updateRecord_(payload.id, updateData);
+  if (!updated) {
+    return jsonResponse({ ok: false, error: { code: "NOT_FOUND", message: "Record not found." } });
+  }
+  return jsonResponse({ ok: true, data: updated });
 }
 
 function doOptions() {
@@ -90,10 +108,44 @@ function parseBody_(e) {
 
   try {
     const data = JSON.parse(e.postData.contents);
-    return { ok: true, action: data.action, data: data.data };
+    return { ok: true, action: data.action, id: data.id, data: data.data };
   } catch (error) {
     return { ok: false, error: { code: "BAD_JSON", message: "Request body must be JSON." } };
   }
+}
+
+function updateRecord_(recordId, data) {
+  const sheet = getSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    return null;
+  }
+
+  const values = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+  let targetRow = null;
+  for (let i = 0; i < values.length; i += 1) {
+    if (values[i][0] === recordId) {
+      targetRow = i + 2;
+      break;
+    }
+  }
+
+  if (!targetRow) {
+    return null;
+  }
+
+  sheet.getRange(targetRow, 2, 1, 3).setValues([
+    [data.name.trim(), data.date, Number(data.delta)],
+  ]);
+
+  const row = sheet.getRange(targetRow, 1, 1, HEADERS.length).getValues()[0];
+  return {
+    id: row[0],
+    name: row[1],
+    date: row[2],
+    delta: row[3],
+    created_at: row[4],
+  };
 }
 
 function getSheet_() {
@@ -118,8 +170,5 @@ function ensureHeaders_(sheet) {
 function jsonResponse(payload) {
   const output = ContentService.createTextOutput(JSON.stringify(payload));
   output.setMimeType(ContentService.MimeType.JSON);
-  output.setHeader("Access-Control-Allow-Origin", "*");
-  output.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  output.setHeader("Access-Control-Allow-Headers", "Content-Type");
   return output;
 }

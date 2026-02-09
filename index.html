@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Poker Bankroll Tracker</title>
+    <title>ポーカー収支管理</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -17,47 +17,49 @@
     <div class="page">
       <header class="hero">
         <div>
-          <p class="eyebrow">Free poker bankroll log</p>
-          <h1>Poker Bankroll Tracker</h1>
-          <p class="subtitle">
-            Track daily chip changes and visualize the cumulative trend.
-          </p>
+          <p class="eyebrow">無料ポーカー収支ログ</p>
+          <h1>ポーカー収支管理</h1>
+          <p class="subtitle">日々のチップ増減を記録し、累計の推移を可視化します。</p>
         </div>
       </header>
 
       <main class="grid">
         <section class="card">
-          <h2>Add a session</h2>
+          <h2>セッションを追加</h2>
           <form id="entry-form" novalidate>
+            <input type="hidden" name="recordId" id="record-id" />
             <label class="field">
-              <span>Name</span>
+              <span>氏名</span>
               <input
                 type="text"
                 name="name"
                 id="name"
-                placeholder="Your name"
+                placeholder="お名前"
                 required
                 maxlength="100"
               />
             </label>
             <label class="field">
-              <span>Date</span>
+              <span>日付</span>
               <input type="date" name="date" id="date" required />
             </label>
             <label class="field">
-              <span>Chip delta</span>
+              <span>チップ増減</span>
               <input
                 type="number"
                 name="delta"
                 id="delta"
-                placeholder="e.g. 1200 or -500"
+                placeholder="例: 1200 または -500"
                 required
                 step="1"
               />
             </label>
             <div class="actions">
-              <button type="submit">Save entry</button>
-              <button type="reset" class="ghost">Reset</button>
+              <button type="submit" id="submit-button">保存する</button>
+              <button type="reset" class="ghost">リセット</button>
+              <button type="button" class="ghost is-hidden" id="cancel-edit">
+                編集を解除
+              </button>
             </div>
             <p id="status" class="status" role="status" aria-live="polite"></p>
           </form>
@@ -66,20 +68,43 @@
         <section class="card chart-card">
           <div class="chart-header">
             <div>
-              <h2>Bankroll trend</h2>
-              <p class="muted">Cumulative chip changes over time.</p>
+              <h2>収支推移</h2>
+              <p class="muted">2026年の累計チップ推移を表示します。</p>
             </div>
             <label class="field inline">
-              <span>Filter</span>
+              <span>プレイヤー</span>
               <select id="name-filter">
-                <option value="all">All players</option>
+                <option value="all">全員</option>
               </select>
             </label>
           </div>
           <div class="chart-wrap">
-            <canvas id="trend-chart" aria-label="Bankroll trend chart"></canvas>
+            <canvas id="trend-chart" aria-label="収支推移チャート"></canvas>
           </div>
           <p class="hint" id="chart-hint"></p>
+        </section>
+
+        <section class="card">
+          <div class="chart-header">
+            <div>
+              <h2>記録一覧</h2>
+              <p class="muted">クリックして編集できます。</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="records-table">
+              <thead>
+                <tr>
+                  <th>氏名</th>
+                  <th>日付</th>
+                  <th>チップ増減</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="records-body"></tbody>
+            </table>
+            <p class="hint" id="table-empty"></p>
+          </div>
         </section>
       </main>
     </div>
