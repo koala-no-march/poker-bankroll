@@ -2,10 +2,6 @@ const SHEET_NAME = "records";
 const HEADERS = ["id", "name", "date", "delta", "created_at"];
 
 function doGet(e) {
-  const pinCheck = validatePin_(e && e.parameter && e.parameter.pin);
-  if (!pinCheck.ok) {
-    return jsonResponse(pinCheck);
-  }
   const action = (e && e.parameter && e.parameter.action) || "list";
   if (action !== "list") {
     return jsonResponse({ ok: false, error: { code: "BAD_ACTION", message: "Invalid action." } });

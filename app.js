@@ -117,7 +117,7 @@ function updateFilterOptions(records) {
   const current = nameFilter.value;
   const names = Array.from(new Set(records.map((record) => record.name))).sort();
 
-  nameFilter.innerHTML = "<option value=\"all\">全員</option>";
+  nameFilter.innerHTML = "<option value=\"\">選択してください</option>";
   names.forEach((name) => {
     const option = document.createElement("option");
     option.value = name;
@@ -127,13 +127,15 @@ function updateFilterOptions(records) {
 
   if (names.includes(current)) {
     nameFilter.value = current;
+  } else if (names.length > 0) {
+    nameFilter.value = names[0];
   }
 }
 
 function getFilteredRecords(records) {
   const filter = nameFilter.value;
-  if (filter === "all") {
-    return records;
+  if (!filter) {
+    return [];
   }
   return records.filter((record) => record.name === filter);
 }
@@ -202,7 +204,9 @@ function renderTable(records) {
   recordsBody.innerHTML = "";
 
   if (sorted.length === 0) {
-    tableEmpty.textContent = "表示する記録がありません。";
+    tableEmpty.textContent = nameFilter.value
+      ? "表示する記録がありません。"
+      : "プレイヤーを選択してください。";
     return;
   }
 
@@ -262,14 +266,8 @@ async function fetchRecords() {
     return;
   }
 
-  const pin = getPinValue();
-  if (!pin) {
-    setStatus("4桁PINを入力してください。", "error");
-    return;
-  }
-
   try {
-    const response = await fetch(`${API_BASE_URL}?action=list&pin=${encodeURIComponent(pin)}`);
+    const response = await fetch(`${API_BASE_URL}?action=list`);
     const payload = await response.json();
     if (!payload.ok) {
       throw new Error(payload.error?.message || "データの取得に失敗しました。");
@@ -280,7 +278,11 @@ async function fetchRecords() {
     const filtered = getFilteredRecords(cachedRecords);
     renderChart(filtered);
     renderTable(filtered);
-    setStatus("データを読み込みました。", "success");
+    if (!nameFilter.value) {
+      setStatus("表示するプレイヤーを選択してください。", "success");
+    } else {
+      setStatus("データを読み込みました。", "success");
+    }
   } catch (error) {
     setStatus(error.message, "error");
   }
