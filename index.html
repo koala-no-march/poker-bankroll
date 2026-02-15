@@ -54,6 +54,19 @@
                 step="1"
               />
             </label>
+            <label class="field">
+              <span>4桁PIN</span>
+              <input
+                type="password"
+                name="pin"
+                id="pin"
+                placeholder="4桁の数字"
+                required
+                inputmode="numeric"
+                pattern="\d{4}"
+                maxlength="4"
+              />
+            </label>
             <div class="actions">
               <button type="submit" id="submit-button">保存する</button>
               <button type="reset" class="ghost">リセット</button>

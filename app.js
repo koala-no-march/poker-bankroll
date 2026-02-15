@@ -10,6 +10,7 @@ const submitButton = document.getElementById("submit-button");
 const cancelEditButton = document.getElementById("cancel-edit");
 const recordsBody = document.getElementById("records-body");
 const tableEmpty = document.getElementById("table-empty");
+const pinInput = document.getElementById("pin");
 
 let chart = null;
 let cachedRecords = [];
@@ -43,6 +44,14 @@ function setStatus(message, kind) {
 
 function apiConfigured() {
   return API_BASE_URL && !API_BASE_URL.includes("YOUR_GAS_WEB_APP_URL");
+}
+
+function getPinValue() {
+  const pin = pinInput.value.trim();
+  if (!/^[0-9]{4}$/.test(pin)) {
+    return null;
+  }
+  return pin;
 }
 
 function normalizeRecords(records) {
@@ -253,8 +262,14 @@ async function fetchRecords() {
     return;
   }
 
+  const pin = getPinValue();
+  if (!pin) {
+    setStatus("4桁PINを入力してください。", "error");
+    return;
+  }
+
   try {
-    const response = await fetch(`${API_BASE_URL}?action=list`);
+    const response = await fetch(`${API_BASE_URL}?action=list&pin=${encodeURIComponent(pin)}`);
     const payload = await response.json();
     if (!payload.ok) {
       throw new Error(payload.error?.message || "データの取得に失敗しました。");
@@ -272,6 +287,10 @@ async function fetchRecords() {
 }
 
 async function submitRecord(record) {
+  const pin = getPinValue();
+  if (!pin) {
+    throw new Error("4桁PINを入力してください。");
+  }
   const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: {
@@ -279,6 +298,7 @@ async function submitRecord(record) {
     },
     body: JSON.stringify({
       action: "create",
+      pin: pin,
       data: record,
     }),
   });
@@ -291,6 +311,10 @@ async function submitRecord(record) {
 }
 
 async function updateRecord(recordId, record) {
+  const pin = getPinValue();
+  if (!pin) {
+    throw new Error("4桁PINを入力してください。");
+  }
   const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: {
@@ -299,6 +323,7 @@ async function updateRecord(recordId, record) {
     body: JSON.stringify({
       action: "update",
       id: recordId,
+      pin: pin,
       data: record,
     }),
   });
@@ -334,6 +359,13 @@ form.addEventListener("submit", async (event) => {
   if (Number.isNaN(delta)) {
     setStatus("チップ増減は数値で入力してください。", "error");
     document.getElementById("delta").focus();
+    return;
+  }
+
+  const pin = getPinValue();
+  if (!pin) {
+    setStatus("4桁PINを入力してください。", "error");
+    pinInput.focus();
     return;
   }
 

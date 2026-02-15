@@ -13,6 +13,10 @@
 - Who has access: Anyone.
 - Copy the Web App URL.
 
+## 3.5) Set the PIN
+- In Apps Script: Project Settings -> Script Properties.
+- Add `APP_PIN` with a 4-digit number.
+
 ## 4) Configure the frontend
 - Open `app.js` and replace `YOUR_GAS_WEB_APP_URL` with the Web App URL.
 

@@ -2,6 +2,10 @@ const SHEET_NAME = "records";
 const HEADERS = ["id", "name", "date", "delta", "created_at"];
 
 function doGet(e) {
+  const pinCheck = validatePin_(e && e.parameter && e.parameter.pin);
+  if (!pinCheck.ok) {
+    return jsonResponse(pinCheck);
+  }
   const action = (e && e.parameter && e.parameter.action) || "list";
   if (action !== "list") {
     return jsonResponse({ ok: false, error: { code: "BAD_ACTION", message: "Invalid action." } });
@@ -13,6 +17,11 @@ function doPost(e) {
   const payload = parseBody_(e);
   if (!payload.ok) {
     return jsonResponse(payload);
+  }
+
+  const pinCheck = validatePin_(payload.pin);
+  if (!pinCheck.ok) {
+    return jsonResponse(pinCheck);
   }
 
   if (payload.action !== "create" && payload.action !== "update") {
@@ -108,10 +117,24 @@ function parseBody_(e) {
 
   try {
     const data = JSON.parse(e.postData.contents);
-    return { ok: true, action: data.action, id: data.id, data: data.data };
+    return { ok: true, action: data.action, id: data.id, pin: data.pin, data: data.data };
   } catch (error) {
     return { ok: false, error: { code: "BAD_JSON", message: "Request body must be JSON." } };
   }
+}
+
+function validatePin_(pin) {
+  const stored = PropertiesService.getScriptProperties().getProperty("APP_PIN");
+  if (!stored) {
+    return { ok: false, error: { code: "PIN_NOT_SET", message: "PIN is not configured." } };
+  }
+  if (!pin || String(pin).length !== 4) {
+    return { ok: false, error: { code: "PIN_REQUIRED", message: "PIN is required." } };
+  }
+  if (String(pin) !== String(stored)) {
+    return { ok: false, error: { code: "PIN_INVALID", message: "PIN is invalid." } };
+  }
+  return { ok: true };
 }
 
 function updateRecord_(recordId, data) {
